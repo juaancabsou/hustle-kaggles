@@ -24,6 +24,18 @@ def feature_engineering_it_1(df):
     # Create a 'Surname' column by extracting the last word from the 'Name' column
     df['Surname'] = df['Name'].str.split().str[-1]
 
+    # Create new features related to cabin
+    cols_cabin = ['fe_cabin_deck', 'fe_cabin_number', 'fe_cabin_letter']
+    df[cols_cabin] = df['Cabin'].str.split('/', expand=True)
+
+    # Fill missing values for cabin features with initial values
+    df['fe_cabin_deck'].fillna('Unkown', inplace=True)
+    df['fe_cabin_number'].fillna(99999, inplace=True)
+    df['fe_cabin_letter'].fillna('Unkown', inplace=True)
+
+    for col in cols_cabin:
+        df[col] = df[col].astype(str)
+
     return df
 
 def feature_engineering_it_2(df):
@@ -47,10 +59,6 @@ def feature_engineering_it_2(df):
     df['fe_billings'] = df[cols_billing].sum(axis=1)
     df['fe_has_spent'] = df['fe_billings'].apply(lambda x: 'has_spent' if x > 0 else 'has_not_spent')
 
-    # Create new features related to cabin
-    cols_cabin = ['fe_deck', 'fe_cabin_number', 'fe_cabin_letter']
-    df[cols_cabin] = df['Cabin'].str.split('/', expand=True)
-    for col in cols_cabin:
-        df[col] = df[col].astype(str)
+
 
     return df
